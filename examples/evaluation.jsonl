@@ -1,0 +1,8 @@
+{"id":"library-paraphrase","messages":["我借的書還沒看完，想延長借閱時間"],"expected_domain":"LIBRARY_SYSTEM"}
+{"id":"academic-paraphrase","messages":["我想看這學期各科的分數"],"expected_domain":"ACADEMIC_SYSTEM"}
+{"id":"out-of-scope","messages":["我要申請校園停車證"],"expected_domain":"UNKNOWN"}
+{"id":"login-clarified","messages":["我登不進去","是圖書館的借閱系統"],"expected_domain":"LIBRARY_SYSTEM"}
+{"id":"two-unhelpful-answers","messages":["系統壞了","我不知道是哪個","還是不知道"],"expected_domain":"UNKNOWN"}
+{"id":"multiple-intents","messages":["我要查成績也要續借書","先處理查成績"],"expected_domain":"ACADEMIC_SYSTEM"}
+{"id":"negation","messages":["不是圖書續借，我要查我的學期成績"],"expected_domain":"ACADEMIC_SYSTEM"}
+

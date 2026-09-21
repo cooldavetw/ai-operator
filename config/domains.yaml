@@ -1,0 +1,43 @@
+version: "1"
+policy:
+  max_clarifications: 2
+  session_ttl_minutes: 30
+
+# Initial definitions must be reviewed by the university before production use.
+# Exact rules match the ENTIRE normalized first message, never a substring.
+domains:
+  ACADEMIC_SYSTEM:
+    display_name: 校務系統
+    description: 選課、加退選、成績查詢、學籍資料，以及明確指名校務系統的登入問題。
+    examples:
+      - 我要查這學期的成績
+      - 選課時出現錯誤
+      - 校務系統密碼忘記了
+    exclusions:
+      - 圖書借閱、續借與館藏查詢
+      - 未說明用途的登入、帳號或繳費問題
+    exact_matches:
+      - 我要查這學期的成績
+      - 選課時出現錯誤
+  LIBRARY_SYSTEM:
+    display_name: 圖書系統
+    description: 圖書借閱、續借、預約、館藏查詢，以及明確指名圖書館系統的登入問題。
+    examples:
+      - 我要續借書
+      - 查不到館藏
+      - 圖書館系統無法登入
+    exclusions:
+      - 課程選課、成績及學籍
+      - 未說明用途的登入、帳號或繳費問題
+    exact_matches:
+      - 我要續借書
+      - 查不到館藏
+
+clarifications:
+  identify_system:
+    text: 您是指校務系統、圖書館系統，還是其他系統？
+  identify_task:
+    text: 您原本想辦理什麼事情，例如選課、查成績、借閱或續借？
+  choose_priority:
+    text: 您的問題涉及不同系統，請問您想先處理哪一件事？
+

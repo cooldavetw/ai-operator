@@ -1,0 +1,45 @@
+services:
+  classifier:
+    image: ntou-domain-classifier:0.1.0
+    build:
+      context: .
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${PORT:-8000}:8000"
+    environment:
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+      MODEL_SHA256: ${MODEL_SHA256:-}
+      CHAT_FORMAT: ${CHAT_FORMAT:-}
+      N_THREADS: ${N_THREADS:-4}
+      N_CTX: ${N_CTX:-4096}
+      MAX_TOKENS: ${MAX_TOKENS:-192}
+      TEMPERATURE: ${TEMPERATURE:-0}
+      INFERENCE_TIMEOUT_SECONDS: ${INFERENCE_TIMEOUT_SECONDS:-30}
+      STARTUP_TIMEOUT_SECONDS: ${STARTUP_TIMEOUT_SECONDS:-180}
+      QUEUE_TIMEOUT_SECONDS: ${QUEUE_TIMEOUT_SECONDS:-30}
+      QUEUE_CAPACITY: ${QUEUE_CAPACITY:-8}
+      EXPIRED_RETENTION_SECONDS: ${EXPIRED_RETENTION_SECONDS:-86400}
+    volumes:
+      - ./models:/models:ro
+      - ./config:/srv/config:ro
+      - classifier-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: ${MEM_LIMIT:-16g}
+    cpus: ${CPU_LIMIT:-8}
+    stop_grace_period: 240s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  classifier-data:
+

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ntou-domain-classifier"
+version = "0.1.0"
+description = "Offline university domain classification service"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.141.1",
+  "pydantic==2.13.4",
+  "uvicorn==0.50.2",
+  "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+inference = ["llama-cpp-python==0.3.35"]
+test = ["pytest==8.4.2", "httpx==0.28.1"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = ["model: requires a local GGUF and llama-cpp-python"]

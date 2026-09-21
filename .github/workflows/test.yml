@@ -1,0 +1,28 @@
+name: Tests
+on:
+  push:
+  pull_request:
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-test.txt
+      - run: bash -n scripts/download_model.sh
+      - run: python -m pytest -q
+        env:
+          PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+      - run: python -m scripts.export_openapi
+      - run: git diff --exit-code docs/openapi.json
+  csharp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - run: dotnet build examples/csharp/ClassifierExample.csproj

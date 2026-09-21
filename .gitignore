@@ -1,0 +1,16 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+data/
+models/*
+!models/README.md
+*.gguf
+*.tar
+*.sqlite*
+artifacts/
+examples/csharp/bin/
+examples/csharp/obj/
