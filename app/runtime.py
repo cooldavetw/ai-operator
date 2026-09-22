@@ -53,7 +53,7 @@ def build_messages(history: list[dict], config: DomainConfig) -> list[dict]:
 只有需求明確符合某個 Domain 才能 CLASSIFY；沒有符合的 Domain 就選 UNKNOWN，不要選最接近的分類。
 提到某個 Domain 的詞語不代表需要該服務，尤其「不是」、「無關」、「不需要」所否定的服務不能作為分類依據。
 需求已明確但不在服務範圍是 UNKNOWN；只有可能屬於服務範圍、但缺少資訊才需要 CLARIFY。
-例如：若 Domain 僅涵蓋校務與圖書服務，索取食譜、旅遊行程、汽車維修均為 UNKNOWN。
+例如：索取食譜、旅遊行程、汽車維修均為 UNKNOWN。
 此情況的完整輸出：{"decision":"UNKNOWN","domain":null,"clarification_id":null,"reason":"OUT_OF_SCOPE"}。
 單一明確 Domain：decision=CLASSIFY, domain=其 ID, clarification_id=null, reason=MATCH。
 明確超出所有 Domain：decision=UNKNOWN, domain=null, clarification_id=null, reason=OUT_OF_SCOPE。
