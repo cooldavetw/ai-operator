@@ -1,6 +1,7 @@
 # Direct dependencies; the release build should archive pip freeze as its manifest.
 fastapi==0.141.1
 pydantic==2.13.4
+pydantic-ai-slim==2.47.0
 uvicorn==0.50.2
 PyYAML==6.0.3
 llama-cpp-python==0.3.35

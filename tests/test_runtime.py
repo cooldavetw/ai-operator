@@ -129,3 +129,39 @@ def test_every_generated_field_combination_passes_validation(settings):
         fields = branch["properties"]
         for values in product(*(field["enum"] for field in fields.values())):
             validate_decision(dict(zip(fields, values)), config)
+
+
+class SequenceModel(StubModel):
+    def __init__(self, values):
+        super().__init__()
+        self.values = iter(values)
+        self.calls = []
+
+    def create_chat_completion(self, **kwargs):
+        self.calls.append(kwargs)
+        self.content = next(self.values)
+        return super().create_chat_completion(**kwargs)
+
+
+@pytest.mark.parametrize("invalid", [
+    "not json",
+    json.dumps({**matched().model_dump(), "domain": "INVENTED"}),
+    json.dumps({**matched().model_dump(), "reason": "OUT_OF_SCOPE"}),
+])
+def test_agent_retries_invalid_output_with_feedback(settings, invalid):
+    model = SequenceModel([invalid, json.dumps(matched().model_dump())])
+    result = _generate(model, settings.model_dump(), [], load_config(settings.config_path))
+    assert result["domain"] == "LIBRARY_SYSTEM"
+    assert len(model.calls) == 2
+    retry = model.calls[1]["messages"]
+    assert retry[-2] == {"role": "assistant", "content": invalid}
+    assert retry[-1]["role"] == "user"
+    assert "Fix the errors" in retry[-1]["content"]
+
+
+def test_agent_stops_after_one_validation_retry(settings):
+    model = SequenceModel(["invalid", "still invalid"])
+    with pytest.raises(ServiceError) as error:
+        _generate(model, settings.model_dump(), [], load_config(settings.config_path))
+    assert error.value.code == "INVALID_MODEL_OUTPUT"
+    assert len(model.calls) == 2

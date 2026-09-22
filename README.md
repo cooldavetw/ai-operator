@@ -136,7 +136,8 @@ python -m scripts.evaluate examples/evaluation.jsonl --output artifacts/evaluati
 |---|---|
 | `app/main.py` | API key、輸入限制、健康檢查、有界佇列 |
 | `app/service.py` | 分類政策、最多兩次澄清、去重、版本衝突 |
-| `app/runtime.py` | GGUF、JSON schema、CPU 推論子程序、逾時終止 |
+| `app/runtime.py` | PydanticAI Agent、Decision 驗證、GGUF 子程序、逾時終止 |
+| `app/local_agent.py` | PydanticAI 本機模型 adapter、llama.cpp JSON schema 推論 |
 | `app/store.py` | SQLite 原子寫入、持久化、單一實例檔案鎖 |
 | `app/config.py` | 設定驗證、Domain 定義 |
 | `config/domains.yaml` | 可擴充分類、固定問句、完整句子規則 |
@@ -148,3 +149,22 @@ LLM 的分類正確性仍取決於模型與校方定義；JSON schema 保證的�
 目前不附模型權重；下載腳本預選 Google Gemma 3 1B IT 作為小型 CPU PoC 候選。
 請依 [模型說明](models/README.md) 完成相容性、
 中文準確率與 CPU 效能驗證後再上線。推論參數參考 [llama-cpp-python 官方文件](https://llama-cpp-python.readthedocs.io/en/latest/)。
+
+### PydanticAI 比較測試
+
+推論透過 `pydantic-ai-slim` 的 `Agent` 與 `NativeOutput(ConfiguredDecision)` 執行，
+使用本機 llama.cpp adapter，不需要雲端 API key、額外模型伺服器或執行時網路。
+PydanticAI 驗證欄位關係及設定內的 ID；JSON 或驗證失敗時回傳修正資訊，最多重試一次。
+兩次生成共用原有 `INFERENCE_TIMEOUT_SECONDS` 期限；重試耗盡仍回傳 `INVALID_MODEL_OUTPUT`。
+格式合法但語意錯誤的分類不會自動觸發重試。完整句子規則仍可略過模型。
+
+保持模型、CHAT_FORMAT 及其他參數與 baseline 相同，更新程式後：
+
+```bash
+docker compose up -d --build classifier
+# 等待 /health/ready 成功後執行；API_KEY 使用部署設定值。
+export API_KEY='test'
+python3 -m scripts.evaluate examples/evaluation.jsonl --output artifacts/gemma-pydanticai.json
+```
+
+比較原有 baseline 的逐筆結果、技術錯誤與延遲；更換 Agent 框架不保證提高語意準確率。

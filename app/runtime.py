@@ -106,29 +106,35 @@ def _load_model(options: dict):
 
 
 def _generate(model, options: dict, history: list[dict], config: DomainConfig) -> dict:
+    from pydantic import ConfigDict, model_validator
+    from pydantic_ai import Agent, NativeOutput
+    from pydantic_ai.exceptions import UnexpectedModelBehavior
+
+    from app.local_agent import LocalLlamaModel
+
+    class ConfiguredDecision(Decision):
+        model_config = ConfigDict(extra="forbid", json_schema_extra=decision_schema(config))
+
+        @model_validator(mode="after")
+        def configured_ids(self):
+            if self.domain is not None and self.domain not in config.domains:
+                raise ValueError("Choose a configured domain ID")
+            if self.clarification_id is not None and self.clarification_id not in config.clarifications:
+                raise ValueError("Choose a configured clarification ID")
+            return self
+
     messages = build_messages(history, config)
-    # Reserve space for the model-specific chat template as well as the JSON output.
-    input_tokens = sum(len(model.tokenize(m["content"].encode("utf-8"))) for m in messages)
-    if input_tokens + options["max_tokens"] + 512 > options["n_ctx"]:
-        raise ServiceError(422, "CONTEXT_TOO_LONG", "對話超過模型容量，請縮短問題或開始新對話。")
+    agent = Agent(
+        LocalLlamaModel(model, options),
+        output_type=NativeOutput(ConfiguredDecision),
+        system_prompt=messages[0]["content"],
+        retries=1,
+    )
     try:
-        result = model.create_chat_completion(
-            messages=messages,
-            response_format={"type": "json_object", "schema": decision_schema(config)},
-            temperature=options["temperature"], max_tokens=options["max_tokens"],
-        )
-    except ValueError as exc:
-        if "context window" in str(exc).lower():
-            raise ServiceError(422, "CONTEXT_TOO_LONG", "對話超過模型容量。") from exc
-        raise
-    choice = result["choices"][0]
-    if choice["finish_reason"] != "stop":
-        raise ServiceError(502, "INVALID_MODEL_OUTPUT", "模型輸出不完整，請重試。")
-    try:
-        value = json.loads(choice["message"]["content"])
-    except (TypeError, json.JSONDecodeError) as exc:
-        raise ServiceError(502, "INVALID_MODEL_OUTPUT", "模型未回傳有效 JSON。") from exc
-    return validate_decision(value, config).model_dump()
+        result = agent.run_sync(messages[1]["content"])
+    except UnexpectedModelBehavior as exc:
+        raise ServiceError(502, "INVALID_MODEL_OUTPUT", "模型輸出未通過驗證，請重試。") from exc
+    return result.output.model_dump()
 
 
 def _worker(connection: Connection, options: dict):
