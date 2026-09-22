@@ -9,3 +9,5 @@
 {"id":"recipe-out-of-scope","messages":["請提供番茄炒蛋的食譜。"],"expected_domain":"UNKNOWN"}
 {"id":"recipe-negated-domains","messages":["請教我怎麼煮番茄炒蛋，與學校、選課、成績或圖書館無關。"],"expected_domain":"UNKNOWN"}
 {"id":"travel-out-of-scope","messages":["請幫我規劃東京五天的觀光行程。"],"expected_domain":"UNKNOWN"}
+{"id":"cake-out-of-scope","messages":["請教我如何製作巧克力蛋糕。"],"expected_domain":"UNKNOWN"}
+{"id":"tire-out-of-scope","messages":["我想學習如何更換汽車輪胎。"],"expected_domain":"UNKNOWN"}

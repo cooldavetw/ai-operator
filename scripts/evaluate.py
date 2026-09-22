@@ -37,7 +37,9 @@ def evaluate(base_url, api_key, cases, timeout):
                 break
         predicted = "ERROR" if error else last["domain"] if last and last["is_final"] else "UNRESOLVED"
         outcomes.append({"id": case["id"], "expected": case["expected_domain"], "predicted": predicted,
-                         "clarifications": last["clarification_count"] if last else 0, "error": error})
+                         "clarifications": last["clarification_count"] if last else 0,
+                         "status": last["status"] if last else None,
+                         "reason_code": last["reason_code"] if last else None, "error": error})
     return summarize(outcomes, latencies)
 
 
@@ -64,6 +66,7 @@ def summarize(outcomes, latencies):
         "auto_classification_coverage": len(classified) / count if count else 0,
         "auto_classification_accuracy": sum(r["expected"] == r["predicted"] for r in classified) / len(classified) if classified else None,
         "out_of_scope_misroute_rate": sum(r in classified for r in unknown) / len(unknown) if unknown else None,
+        "out_of_scope_unresolved_rate": sum(r["predicted"] == "UNRESOLVED" for r in unknown) / len(unknown) if unknown else None,
         "mean_clarifications": sum(r["clarifications"] for r in outcomes) / count if count else 0,
         "clarification_limit_violations": sum(r["clarifications"] > 2 for r in outcomes),
         "technical_errors": sum(r["error"] is not None for r in outcomes),
