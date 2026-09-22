@@ -6,3 +6,6 @@
 {"id":"multiple-intents","messages":["我要查成績也要續借書","先處理查成績"],"expected_domain":"ACADEMIC_SYSTEM"}
 {"id":"negation","messages":["不是圖書續借，我要查我的學期成績"],"expected_domain":"ACADEMIC_SYSTEM"}
 
+{"id":"recipe-out-of-scope","messages":["請提供番茄炒蛋的食譜。"],"expected_domain":"UNKNOWN"}
+{"id":"recipe-negated-domains","messages":["請教我怎麼煮番茄炒蛋，與學校、選課、成績或圖書館無關。"],"expected_domain":"UNKNOWN"}
+{"id":"travel-out-of-scope","messages":["請幫我規劃東京五天的觀光行程。"],"expected_domain":"UNKNOWN"}

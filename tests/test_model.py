@@ -23,6 +23,18 @@ def test_real_cpu_model(settings):
         )
         assert decision.decision == "CLASSIFY"
         assert decision.domain == "LIBRARY_SYSTEM"
+        for message in [
+            "請提供番茄炒蛋的食譜。",
+            "請教我怎麼煮番茄炒蛋，與學校、選課、成績或圖書館無關。",
+            "請幫我規劃東京五天的觀光行程。",
+        ]:
+            decision = runtime.infer(
+                [{"role": "user", "content": message}],
+                load_config(settings.config_path),
+            )
+            assert decision.decision == "UNKNOWN", (message, decision)
+            assert decision.reason == "OUT_OF_SCOPE"
+            assert decision.domain is None
     finally:
         runtime.close()
 
