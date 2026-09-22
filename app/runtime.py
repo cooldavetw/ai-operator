@@ -23,19 +23,26 @@ class Runtime(Protocol):
 
 
 def decision_schema(config: DomainConfig) -> dict:
-    return {
-        "type": "object",
-        "properties": {
-            "decision": {"type": "string", "enum": ["CLASSIFY", "CLARIFY", "UNKNOWN"]},
-            "domain": {"enum": [None, *config.domains]},
-            "clarification_id": {"enum": [None, *config.clarifications]},
-            "reason": {"type": "string", "enum": [
-                "MATCH", "INSUFFICIENT_INFORMATION", "MULTIPLE_DOMAINS", "OUT_OF_SCOPE"
-            ]},
-        },
-        "required": ["decision", "domain", "clarification_id", "reason"],
-        "additionalProperties": False,
-    }
+    def branch(decision, domains, questions, reasons):
+        return {
+            "type": "object",
+            "properties": {
+                "decision": {"enum": [decision]},
+                "domain": {"enum": domains},
+                "clarification_id": {"enum": questions},
+                "reason": {"enum": reasons},
+            },
+            "required": ["decision", "domain", "clarification_id", "reason"],
+            "additionalProperties": False,
+        }
+
+    # Constrain related fields together, matching Decision.consistent().
+    return {"anyOf": [
+        branch("CLASSIFY", list(config.domains), [None], ["MATCH"]),
+        branch("CLARIFY", [None], list(config.clarifications),
+               ["INSUFFICIENT_INFORMATION", "MULTIPLE_DOMAINS"]),
+        branch("UNKNOWN", [None], [None], ["OUT_OF_SCOPE"]),
+    ]}
 
 
 def build_messages(history: list[dict], config: DomainConfig) -> list[dict]:

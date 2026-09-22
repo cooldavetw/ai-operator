@@ -1,11 +1,12 @@
 import json
+from itertools import product
 import time
 
 import pytest
 
 from app.config import load_config
 from app.errors import ServiceError
-from app.runtime import LlamaRuntime, _generate, build_messages, validate_decision
+from app.runtime import LlamaRuntime, _generate, build_messages, decision_schema, validate_decision
 from tests.conftest import matched
 
 
@@ -87,7 +88,7 @@ def test_generation_uses_schema_and_validates_output(settings):
     model = StubModel()
     assert _generate(model, settings.model_dump(), [], config)["domain"] == "LIBRARY_SYSTEM"
     schema = model.arguments["response_format"]["schema"]
-    assert schema["properties"]["domain"]["enum"] == [None, "ACADEMIC_SYSTEM", "LIBRARY_SYSTEM"]
+    assert schema["anyOf"][0]["properties"]["domain"]["enum"] == ["ACADEMIC_SYSTEM", "LIBRARY_SYSTEM"]
     assert model.arguments["max_tokens"] == settings.max_tokens
 
 
@@ -120,3 +121,11 @@ def test_invalid_decisions_rejected(settings, value):
     with pytest.raises(ServiceError):
         validate_decision(value, load_config(settings.config_path))
 
+
+
+def test_every_generated_field_combination_passes_validation(settings):
+    config = load_config(settings.config_path)
+    for branch in decision_schema(config)["anyOf"]:
+        fields = branch["properties"]
+        for values in product(*(field["enum"] for field in fields.values())):
+            validate_decision(dict(zip(fields, values)), config)
