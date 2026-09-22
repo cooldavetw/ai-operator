@@ -168,3 +168,23 @@ python3 -m scripts.evaluate examples/evaluation.jsonl --output artifacts/gemma-p
 ```
 
 比較原有 baseline 的逐筆結果、技術錯誤與延遲；更換 Agent 框架不保證提高語意準確率。
+
+### 逐輪對話評估
+
+`examples/evaluation.jsonl` 使用 `turns`，每輪包含 `message` 與 `expected`。
+`expected` 可指定 `status`、`domain`、`is_final`、`reason_code`、`clarification_count`；
+未指定的欄位不比較，也不限定澄清問句 ID。最後一輪的 `domain` 可取代案例層級的
+`expected_domain`；若兩者都有，必須一致。舊的 `messages` / `expected_domain` 格式仍可讀取，
+但只有最後一輪的分類與完成狀態會受到明確檢查。
+
+報告保留原有 final-domain 指標，另新增 `dialogue_pass_rate`（所有輪次都通過）、
+`turn_pass_rate`（通過輪次 / 全部計畫輪次）、`premature_completions` 與 `skipped_turns`。
+提前結束或技術錯誤後不再送出後續訊息；跳過的輪次仍算未通過。
+`results[].turns` 列出預期、實際回應、差異、錯誤及跳過原因。
+最終 domain 相同不代表對話通過，例如應追問卻直接回 UNKNOWN 仍會失敗。
+
+```bash
+python3 -m scripts.evaluate examples/evaluation.jsonl --output artifacts/gemma-dialogue-evaluation.json
+```
+
+這些是主機端評估工具變更，不需要重建服務映像檔。

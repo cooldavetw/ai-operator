@@ -1,13 +1,12 @@
-{"id":"library-paraphrase","messages":["我借的書還沒看完，想延長借閱時間"],"expected_domain":"LIBRARY_SYSTEM"}
-{"id":"academic-paraphrase","messages":["我想看這學期各科的分數"],"expected_domain":"ACADEMIC_SYSTEM"}
-{"id":"out-of-scope","messages":["我要申請校園停車證"],"expected_domain":"UNKNOWN"}
-{"id":"login-clarified","messages":["我登不進去","是圖書館的借閱系統"],"expected_domain":"LIBRARY_SYSTEM"}
-{"id":"two-unhelpful-answers","messages":["系統壞了","我不知道是哪個","還是不知道"],"expected_domain":"UNKNOWN"}
-{"id":"multiple-intents","messages":["我要查成績也要續借書","先處理查成績"],"expected_domain":"ACADEMIC_SYSTEM"}
-{"id":"negation","messages":["不是圖書續借，我要查我的學期成績"],"expected_domain":"ACADEMIC_SYSTEM"}
-
-{"id":"recipe-out-of-scope","messages":["請提供番茄炒蛋的食譜。"],"expected_domain":"UNKNOWN"}
-{"id":"recipe-negated-domains","messages":["請教我怎麼煮番茄炒蛋，與學校、選課、成績或圖書館無關。"],"expected_domain":"UNKNOWN"}
-{"id":"travel-out-of-scope","messages":["請幫我規劃東京五天的觀光行程。"],"expected_domain":"UNKNOWN"}
-{"id":"cake-out-of-scope","messages":["請教我如何製作巧克力蛋糕。"],"expected_domain":"UNKNOWN"}
-{"id":"tire-out-of-scope","messages":["我想學習如何更換汽車輪胎。"],"expected_domain":"UNKNOWN"}
+{"id": "library-paraphrase", "expected_domain": "LIBRARY_SYSTEM", "turns": [{"message": "我借的書還沒看完，想延長借閱時間", "expected": {"status": "CLASSIFIED", "domain": "LIBRARY_SYSTEM", "is_final": true, "reason_code": "SEMANTIC_MATCH", "clarification_count": 0}}]}
+{"id": "academic-paraphrase", "expected_domain": "ACADEMIC_SYSTEM", "turns": [{"message": "我想看這學期各科的分數", "expected": {"status": "CLASSIFIED", "domain": "ACADEMIC_SYSTEM", "is_final": true, "reason_code": "SEMANTIC_MATCH", "clarification_count": 0}}]}
+{"id": "out-of-scope", "expected_domain": "UNKNOWN", "turns": [{"message": "我要申請校園停車證", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}
+{"id": "login-clarified", "expected_domain": "LIBRARY_SYSTEM", "turns": [{"message": "我登不進去", "expected": {"status": "NEEDS_CLARIFICATION", "domain": null, "is_final": false, "reason_code": "INSUFFICIENT_INFORMATION", "clarification_count": 1}}, {"message": "是圖書館的借閱系統", "expected": {"status": "CLASSIFIED", "domain": "LIBRARY_SYSTEM", "is_final": true, "reason_code": "SEMANTIC_MATCH", "clarification_count": 1}}]}
+{"id": "two-unhelpful-answers", "expected_domain": "UNKNOWN", "turns": [{"message": "系統壞了", "expected": {"status": "NEEDS_CLARIFICATION", "domain": null, "is_final": false, "reason_code": "INSUFFICIENT_INFORMATION", "clarification_count": 1}}, {"message": "我不知道是哪個", "expected": {"status": "NEEDS_CLARIFICATION", "domain": null, "is_final": false, "reason_code": "INSUFFICIENT_INFORMATION", "clarification_count": 2}}, {"message": "還是不知道", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "CLARIFICATION_LIMIT", "clarification_count": 2}}]}
+{"id": "multiple-intents", "expected_domain": "ACADEMIC_SYSTEM", "turns": [{"message": "我要查成績也要續借書", "expected": {"status": "NEEDS_CLARIFICATION", "domain": null, "is_final": false, "reason_code": "MULTIPLE_DOMAINS", "clarification_count": 1}}, {"message": "先處理查成績", "expected": {"status": "CLASSIFIED", "domain": "ACADEMIC_SYSTEM", "is_final": true, "reason_code": "SEMANTIC_MATCH", "clarification_count": 1}}]}
+{"id": "negation", "expected_domain": "ACADEMIC_SYSTEM", "turns": [{"message": "不是圖書續借，我要查我的學期成績", "expected": {"status": "CLASSIFIED", "domain": "ACADEMIC_SYSTEM", "is_final": true, "reason_code": "SEMANTIC_MATCH", "clarification_count": 0}}]}
+{"id": "recipe-out-of-scope", "expected_domain": "UNKNOWN", "turns": [{"message": "請提供番茄炒蛋的食譜。", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}
+{"id": "recipe-negated-domains", "expected_domain": "UNKNOWN", "turns": [{"message": "請教我怎麼煮番茄炒蛋，與學校、選課、成績或圖書館無關。", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}
+{"id": "travel-out-of-scope", "expected_domain": "UNKNOWN", "turns": [{"message": "請幫我規劃東京五天的觀光行程。", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}
+{"id": "cake-out-of-scope", "expected_domain": "UNKNOWN", "turns": [{"message": "請教我如何製作巧克力蛋糕。", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}
+{"id": "tire-out-of-scope", "expected_domain": "UNKNOWN", "turns": [{"message": "我想學習如何更換汽車輪胎。", "expected": {"status": "UNKNOWN", "domain": "UNKNOWN", "is_final": true, "reason_code": "OUT_OF_SCOPE", "clarification_count": 0}}]}

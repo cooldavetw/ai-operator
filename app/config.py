@@ -16,7 +16,8 @@ class StrictModel(BaseModel):
 
 
 class Domain(StrictModel):
-    display_name: str = Field(min_length=1, max_length=100)
+    # Optional legacy fields keep stored conversation snapshots readable.
+    display_name: str | None = Field(default=None, min_length=1, max_length=100)
     description: str = Field(min_length=1, max_length=2000)
     examples: list[str] = Field(default_factory=list, max_length=30)
     exclusions: list[str] = Field(default_factory=list, max_length=30)
