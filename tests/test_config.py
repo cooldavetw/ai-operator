@@ -24,9 +24,14 @@ def test_unknown_reserved_and_two_turn_limit(settings):
 
 
 def test_api_key_required_and_no_example_key():
-    for key in ["short", "replace-with-a-random-secret"]:
+    for key in ["", "   ", "replace-with-a-random-secret"]:
         with pytest.raises(ValidationError):
             Settings(api_key=key)
+
+
+@pytest.mark.parametrize("key", ["a", "test", "short"])
+def test_short_api_keys_allowed(key):
+    assert Settings(api_key=key).api_key.get_secret_value() == key
 
 
 def test_database_refuses_second_owner(settings):

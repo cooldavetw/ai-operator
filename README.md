@@ -7,7 +7,7 @@ Python 3.12 / FastAPI / llama-cpp-python / SQLite / Docker Compose。
 ## 快速部署
 
 1. 使用下方下載腳本取得 ggml-org 發布的 Google Gemma 3 1B IT Q4_K_M GGUF，或手動放入經驗證的 `models/model.gguf`。
-2. 複製 `.env.example` 為 `.env`，設定隨機 `API_KEY`（至少 24 字元），以及模型的 `MODEL_SHA256`。
+2. 複製 `.env.example` 為 `.env`，設定隨機 `API_KEY`（不可為空，無最短長度限制），以及模型的 `MODEL_SHA256`。
 3. 校方確認 `config/domains.yaml` 中的分類邊界、範例、完整句子比對規則與問句。
 4. 在已安裝 Docker Engine 與 Compose plugin 的 Ubuntu VM 執行：
 
@@ -113,7 +113,7 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
 
 ```bash
 CMAKE_ARGS='-DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS' pip install -r requirements.txt
-export API_KEY='use-a-real-random-secret-of-at-least-24-characters'
+export API_KEY='use-a-random-secret'
 export MODEL_PATH="$PWD/models/model.gguf"
 uvicorn app.main:create_app --factory --workers 1 --no-access-log
 ```

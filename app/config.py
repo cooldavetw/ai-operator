@@ -79,8 +79,8 @@ class Settings(StrictModel):
     @model_validator(mode="after")
     def validate_key(self):
         key = self.api_key.get_secret_value()
-        if len(key) < 24 or key == "replace-with-a-random-secret":
-            raise ValueError("API_KEY must contain at least 24 characters; replace the example")
+        if not key.strip() or key == "replace-with-a-random-secret":
+            raise ValueError("API_KEY must be nonempty; replace the example")
         return self
 
     @classmethod
