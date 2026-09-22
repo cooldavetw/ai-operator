@@ -1,5 +1,5 @@
 FROM python:3.12-slim-bookworm AS builder
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential cmake libopenblas-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential cmake pkg-config libopenblas-dev \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY requirements.txt .
