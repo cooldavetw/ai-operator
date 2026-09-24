@@ -6,7 +6,7 @@ Python 3.12 / FastAPI / llama-cpp-python / SQLite / Docker Compose。
 
 ## 快速部署
 
-1. 使用下方下載腳本取得 ggml-org 發布的 Google Gemma 3 1B IT Q4_K_M GGUF，或手動放入經驗證的 `models/model.gguf`。
+1. 使用下方下載腳本取得 bartowski 發布的 Google Gemma 4 E2B IT Q4_K_L GGUF，或手動放入經驗證的 `models/model.gguf`。
 2. 複製 `.env.example` 為 `.env`，設定隨機 `API_KEY`（不可為空，無最短長度限制），以及模型的 `MODEL_SHA256`。
 3. 校方確認 `config/domains.yaml` 中的分類邊界、範例、完整句子比對規則與問句。
 4. 在已安裝 Docker Engine 與 Compose plugin 的 Ubuntu VM 執行：
@@ -22,10 +22,10 @@ curl http://127.0.0.1:8000/health/ready
 預設僅綁定 `127.0.0.1`；由校內 HTTPS 反向代理對 C# 系統提供服務。
 服務不含語音辨識；語音輸入須由呼叫端先轉成文字。
 
-## 下載 Gemma 3 1B
+## 下載 Gemma 4 E2B
 
-下載來源為 [ggml-org 的公開 GGUF](https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF)，
-檔案為 `gemma-3-1b-it-Q4_K_M.gguf`，不需要登入 Hugging Face 或設定 HF_TOKEN。
+下載來源為 [bartowski 的公開 GGUF](https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF)，
+檔案為 `google_gemma-4-E2B-it-Q4_K_L.gguf`，不需要登入 Hugging Face 或設定 HF_TOKEN。
 在有網路的 Ubuntu/Linux 準備機執行。主機只需 Bash 4+、curl、CA 憑證及
 GNU coreutils（含 sha256sum、stat）與 util-linux 的 flock；不需要 Python 或 jq。
 若尚未安裝 curl／憑證，可先執行 `sudo apt-get install curl ca-certificates`。
@@ -34,9 +34,10 @@ GNU coreutils（含 sha256sum、stat）與 util-linux 的 flock；不需要 Pyth
 bash scripts/download_model.sh
 ```
 
-腳本預設寫入專案的 `models/model.gguf`，下載約 806 MB。完成後將印出的 `MODEL_SHA256=...`
+腳本預設寫入專案的 `models/model.gguf`，下載約 4.13 GB。完成後將印出的 `MODEL_SHA256=...`
 填入 `.env`。腳本不會修改 `.env`，也不會使用或傳送 token。
-此檔案是 Q4_K_M 量化版，與先前 Google QAT Q4_0 檔案不同，檢查碼也已更新。
+此檔案是 Q4_K_L 量化版，與先前 Gemma 3 不同；升級時必須更新 MODEL_SHA256，
+並設定 CHAT_FORMAT=chat_template.default。
 
 來源 revision、大小及 SHA-256 固定於 [model_manifest.conf](scripts/model_manifest.conf)。
 設定檔以嚴格的 key=value 格式解析，不會作為 shell 程式執行。
@@ -146,7 +147,7 @@ python -m scripts.evaluate examples/evaluation.jsonl --output artifacts/evaluati
 設定在啟動時載入；既有對話保留建立時的設定快照。新增 Domain 後必須更新 C# 路由及回歸案例。
 LLM 的分類正確性仍取決於模型與校方定義；JSON schema 保證的是輸出結構，不是語意正確率。
 
-目前不附模型權重；下載腳本預選 Google Gemma 3 1B IT 作為小型 CPU PoC 候選。
+目前不附模型權重；下載腳本預選 Google Gemma 4 E2B IT Q4_K_L 作為 CPU PoC 候選。
 請依 [模型說明](models/README.md) 完成相容性、
 中文準確率與 CPU 效能驗證後再上線。推論參數參考 [llama-cpp-python 官方文件](https://llama-cpp-python.readthedocs.io/en/latest/)。
 

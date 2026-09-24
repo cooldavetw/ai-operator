@@ -197,7 +197,7 @@ def test_manifest_and_help_do_not_need_credentials(setup):
     setup[2].pop("HF_TOKEN", None)
     manifest = run(setup, "--print-manifest")
     assert manifest.returncode == 0
-    assert json.loads(manifest.stdout)["revision"] == "f9c28bcd85737ffc5aef028638d3341d49869c27"
+    assert json.loads(manifest.stdout)["revision"] == "81012ba3538e061d5ee003f11f25335b17f82e2d"
     assert run(setup, "--help").returncode == 0
     assert not Path(setup[2]["CURL_ARGS"]).exists()
 
@@ -207,7 +207,7 @@ def test_manifest_is_strict_data_not_executable_code(setup, change):
     _, manifest, env, directory = setup
     text = manifest.read_text()
     if change == "unpinned":
-        text = text.replace("revision=f9c28bcd85737ffc5aef028638d3341d49869c27", "revision=main")
+        text = text.replace("revision=81012ba3538e061d5ee003f11f25335b17f82e2d", "revision=main")
     elif change == "duplicate":
         text += "size=12\n"
     elif change == "injection":

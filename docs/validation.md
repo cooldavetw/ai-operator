@@ -54,3 +54,36 @@ PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -m pytest tests/test_download_model.py 
 另外使用真實 curl、不帶 token，對固定 revision URL 送出 bytes 0–3 請求，
 成功取得 HTTP 206 與 4 bytes；確認公開下載／redirect 可用。
 尚未下載完整 806 MB 檔案或以真實模型執行推論。
+
+## 2026-09-24 Gemma 4 E2B Q4_K_L local verification
+
+Switched the downloader pin to bartowski/google_gemma-4-E2B-it-GGUF,
+revision `81012ba3538e061d5ee003f11f25335b17f82e2d`, file
+`google_gemma-4-E2B-it-Q4_K_L.gguf` (4,129,050,080 bytes).
+The complete downloaded file matched SHA-256
+`55f18873822c8b1f27d2e76b204fafc6cd1d1ff268526a70dc95c6ef6b83d52e`.
+The previous local model was retained as `models/gemma-3-1b-q4_k_m-backup.gguf`.
+
+Verified the embedded template with llama-cpp-python 0.3.35 and
+`CHAT_FORMAT=chat_template.default`: system/user text is present and the rendered
+prompt does not enable thinking. The native CPU wheel was installed under `/tmp`
+for this check; the Docker source build was not exercised.
+
+Regression suite: 86 passed, 1 optional real-model pytest skipped.
+Separately ran all 12 sample dialogues through the actual `Classifier`,
+`LlamaRuntime`, PydanticAI adapter, and isolated SQLite database with the new GGUF.
+No HTTP server or Docker container was used for that local model evaluation.
+The short prompt, schema, temperature=0, n_ctx=4096, max_tokens=192, n_threads=4,
+and 30-second inference timeout were retained.
+
+- Dialogue pass rate: 11/12 (91.7%).
+- Planned turn pass rate: 15/16 (93.75%).
+- Final domain matches: 12/12.
+- Premature completions, skipped turns, technical errors: 0.
+- Median / P95 inference request latency: 8.29 / 18.77 seconds on this host.
+- Remaining failure: multiple-intents turn 1 returned a clarification with
+  INSUFFICIENT_INFORMATION rather than MULTIPLE_DOMAINS; its follow-up classified correctly.
+
+Local report: `artifacts/gemma4-local-evaluation.json` (ignored runtime artifact).
+These development cases are not an independent accuracy benchmark. Repeat the
+HTTP evaluator on the deployment VM to measure its actual behavior and latency.

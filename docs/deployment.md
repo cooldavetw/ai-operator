@@ -25,7 +25,7 @@ sha256sum ntou-domain-classifier-0.1.0.tar models/model.gguf config/domains.yaml
 
 模型可先依 README 執行 `bash scripts/download_model.sh` 下載；主機需要 Bash 4+、curl、
 CA 憑證、GNU coreutils 與 util-linux 的 flock，不需要 Python 或 jq。
-來源為 ggml-org 的公開 Gemma 3 1B IT Q4_K_M GGUF，不需要 HF_TOKEN；
+來源為 bartowski 的公開 Gemma 4 E2B IT Q4_K_L GGUF，不需要 HF_TOKEN；
 支援三次重試與中斷續傳。將 `scripts/model_manifest.conf` 也封存於交付包。
 此腳本是建置前的準備工具，不在 Container 啟動時執行。
 
